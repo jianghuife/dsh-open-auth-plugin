@@ -1,0 +1,72 @@
+{
+  "name": "dsh-open-auth",
+  "version": "0.1.0",
+  "description": "One DeepSeek Harness plugin for every pi-ai provider, including subscription OAuth",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./store": {
+      "types": "./dist/store.d.ts",
+      "import": "./dist/store.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "dsh-open-auth": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/cli.ts src/store.ts --format esm --dts --clean",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run check && npm test && npm run build"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "dsh",
+    "pi-ai",
+    "oauth",
+    "openai-codex",
+    "kimi"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jianghuife/dsh-open-auth-plugin.git"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-attachment": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-llm": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-timeout": "^0.1.0-rc.6"
+  },
+  "dependencies": {
+    "@earendil-works/pi-ai": "^0.84.1",
+    "@inquirer/prompts": "^8.0.2",
+    "@deepseek-ai/schemastery": "^3.18.1"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-attachment": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-llm": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-timeout": "^0.1.0-rc.6",
+    "@types/node": "^24.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
