@@ -23,7 +23,8 @@
     "dist",
     "LICENSE",
     "NOTICE",
-    "README.md"
+    "README.md",
+    "README.zh-CN.md"
   ],
   "scripts": {
     "build": "tsup src/index.ts src/cli.ts src/store.ts --format esm --dts --clean",
