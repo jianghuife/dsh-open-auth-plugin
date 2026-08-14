@@ -6,51 +6,60 @@ A DeepSeek Harness LLM plugin that connects every chat provider currently built 
 
 > This does not convert a ChatGPT subscription into an OpenAI API key. The `openai-codex` provider uses the OpenAI Codex OAuth flow and ChatGPT backend implemented by pi-ai. Availability, supported models, and usage limits remain subject to your OpenAI account and applicable service terms.
 
-## Install and build
+## Installation
 
 Node.js 22.19 or later is required.
 
+Install the package into a DSH profile (replace `web` with your profile name when needed):
+
 ```bash
-npm install
-npm run build
-npm link
+dsh plugin --profile web add dsh-open-auth
 ```
 
-Sign in with an OpenAI Codex subscription:
+If you manage the DSH runtime as a regular Node.js project instead, install it in that project:
 
 ```bash
-dsh-open-auth login openai-codex
-dsh-open-auth status openai-codex
+npm install dsh-open-auth
+```
+
+Then add the plugin to your DSH configuration as shown below. Installing through `dsh plugin add` activates the bundled default configuration automatically.
+
+## Authentication
+
+When installed in a DSH profile, run the CLI through that profile. Sign in with an OpenAI Codex subscription:
+
+```bash
+dsh plugin --profile web exec dsh-open-auth login openai-codex
+dsh plugin --profile web exec dsh-open-auth status openai-codex
 ```
 
 Sign in with a Kimi Code subscription:
 
 ```bash
-dsh-open-auth login kimi-coding oauth
+dsh plugin --profile web exec dsh-open-auth login kimi-coding oauth
 ```
 
 List all providers and models currently exposed by pi-ai:
 
 ```bash
-dsh-open-auth providers
-dsh-open-auth models openai-codex
+dsh plugin --profile web exec dsh-open-auth providers
+dsh plugin --profile web exec dsh-open-auth models openai-codex
 ```
+
+For a regular local npm installation, replace the prefix above with `npx`, for example: `npx dsh-open-auth login openai-codex`.
 
 ## DSH configuration
 
-Add this package to the plugin list in your DSH `cordis.yml`. The exact parent composition path depends on your DSH deployment:
+The bundled configuration registers every built-in pi-ai chat provider. No extra configuration is required after installing it into a profile. Verify the composed row without starting DSH:
 
-```yaml
-- id: llm-open-auth
-  name: dsh-open-auth
-  config: {}
+```bash
+dsh --profile web --dump-config
 ```
 
-By default, the plugin registers every built-in pi-ai chat provider. You can restrict it to selected routes:
+To restrict the registered routes, add the following override to that profile's `cordis.patch.yml`:
 
 ```yaml
 - id: llm-open-auth
-  name: dsh-open-auth
   config:
     providers:
       - openai-codex
@@ -58,6 +67,14 @@ By default, the plugin registers every built-in pi-ai chat provider. You can res
       - anthropic
       - openrouter
     streamIdleTimeoutMs: 300000
+```
+
+For a standalone Cordis configuration that does not use DSH profiles, add the package as a normal plugin row:
+
+```yaml
+- id: llm-open-auth
+  name: dsh-open-auth
+  config: {}
 ```
 
 Do not load another LLM plugin that owns any of the same provider routes. For example, registering `anthropic` from both this plugin and the official `llm-pi-ai` plugin will be rejected by DSH as a duplicate route.
@@ -91,9 +108,21 @@ This project does not maintain a duplicate provider allowlist. `builtinModels()`
 ## Development
 
 ```bash
+npm install
 npm run check
 npm test
 npm run build
 ```
+
+## Publishing
+
+The package name is `dsh-open-auth`. The package includes a `dsh.bundle` manifest and `cordis.patch.yml`, so `dsh plugin add` installs and activates it as a profile layer. `prepublishOnly` runs the type check, tests, and production build automatically before publication.
+
+```bash
+npm login
+npm publish
+```
+
+Use `npm pack --dry-run` to inspect the files that will be published without uploading anything.
 
 The DSH message, stream-event, and replay mappings in this project are adapted from the MIT-licensed DeepSeek Harness implementation. See [NOTICE](./NOTICE).

@@ -21,6 +21,7 @@
   },
   "files": [
     "dist",
+    "cordis.patch.yml",
     "LICENSE",
     "NOTICE",
     "README.md",
@@ -45,6 +46,14 @@
     "kimi"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jianghuife/dsh-open-auth-plugin.git"

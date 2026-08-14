@@ -6,51 +6,60 @@
 
 > 这不是 OpenAI API Key 到 ChatGPT 订阅的转换。`openai-codex` 使用 pi-ai 实现的 OpenAI Codex OAuth 和 ChatGPT backend；是否可用、支持哪些模型以及额度限制仍由 OpenAI 账户和适用的服务条款决定。
 
-## 安装与构建
+## 安装
 
 要求 Node.js 22.19 或更高版本。
 
+将包安装到 DSH profile 中（如果使用其他 profile，请将 `web` 替换成对应名称）：
+
 ```bash
-npm install
-npm run build
-npm link
+dsh plugin --profile web add dsh-open-auth
 ```
 
-登录 OpenAI Codex 订阅：
+如果你的 DSH 运行时是普通 Node.js 项目，则在该项目中安装：
 
 ```bash
-dsh-open-auth login openai-codex
-dsh-open-auth status openai-codex
+npm install dsh-open-auth
+```
+
+然后按照下文说明将插件加入 DSH 配置。通过 `dsh plugin add` 安装时，内置的默认配置会自动生效。
+
+## 身份认证
+
+安装到 DSH profile 后，通过该 profile 执行 CLI。登录 OpenAI Codex 订阅：
+
+```bash
+dsh plugin --profile web exec dsh-open-auth login openai-codex
+dsh plugin --profile web exec dsh-open-auth status openai-codex
 ```
 
 登录 Kimi Code 订阅：
 
 ```bash
-dsh-open-auth login kimi-coding oauth
+dsh plugin --profile web exec dsh-open-auth login kimi-coding oauth
 ```
 
 查看 pi-ai 当前提供的全部 Provider 和模型：
 
 ```bash
-dsh-open-auth providers
-dsh-open-auth models openai-codex
+dsh plugin --profile web exec dsh-open-auth providers
+dsh plugin --profile web exec dsh-open-auth models openai-codex
 ```
+
+如果通过普通 npm 项目本地安装，请把上述命令前缀替换为 `npx`，例如：`npx dsh-open-auth login openai-codex`。
 
 ## DSH 配置
 
-在 DSH 的 `cordis.yml` 插件列表中使用本包，具体父级组合路径以你的 DSH 部署为准：
+内置配置默认注册 pi-ai 的全部聊天 Provider。安装到 profile 后无需额外配置，可以先在不启动 DSH 的情况下检查组合结果：
 
-```yaml
-- id: llm-open-auth
-  name: dsh-open-auth
-  config: {}
+```bash
+dsh --profile web --dump-config
 ```
 
-默认注册 pi-ai 的全部内置聊天 Provider。也可以只注册需要的路由：
+如需限制注册的路由，在该 profile 的 `cordis.patch.yml` 中加入以下覆盖配置：
 
 ```yaml
 - id: llm-open-auth
-  name: dsh-open-auth
   config:
     providers:
       - openai-codex
@@ -58,6 +67,14 @@ dsh-open-auth models openai-codex
       - anthropic
       - openrouter
     streamIdleTimeoutMs: 300000
+```
+
+如果使用不基于 DSH profile 的独立 Cordis 配置，则将本包作为普通插件条目加入 `cordis.yml`：
+
+```yaml
+- id: llm-open-auth
+  name: dsh-open-auth
+  config: {}
 ```
 
 不要同时加载另一个占用相同 Provider 路由的 LLM 插件。例如，同时让本插件和官方 `llm-pi-ai` 注册 `anthropic` 时，DSH 会按设计拒绝重复路由。
@@ -91,9 +108,21 @@ flowchart LR
 ## 开发
 
 ```bash
+npm install
 npm run check
 npm test
 npm run build
 ```
+
+## 发布
+
+npm 包名为 `dsh-open-auth`。包内包含 `dsh.bundle` 声明和 `cordis.patch.yml`，因此 `dsh plugin add` 会把它作为 profile 配置层安装并自动启用。发布前，`prepublishOnly` 会自动执行类型检查、测试和生产构建。
+
+```bash
+npm login
+npm publish
+```
+
+可以先执行 `npm pack --dry-run`，在不上传文件的情况下检查最终发布内容。
 
 本项目的 DSH 消息、流事件和 replay 映射基于 DeepSeek Harness 的 MIT 实现调整，详见 [NOTICE](./NOTICE)。

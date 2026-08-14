@@ -1,0 +1,6 @@
+# Installed as a DSH bundle. The official llm-pi-ai route is dormant in the
+# base profile until configured, so this separate adapter can safely register
+# pi-ai's built-in provider routes by default.
+- insert:
+    - id: llm-open-auth
+      name: dsh-open-auth
