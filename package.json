@@ -1,6 +1,6 @@
 {
   "name": "dsh-open-auth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "One DeepSeek Harness plugin for every pi-ai provider, including subscription OAuth",
   "type": "module",
   "main": "./dist/index.js",

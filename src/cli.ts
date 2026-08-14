@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process'
 import process from 'node:process'
-import { input, password, select } from '@inquirer/prompts'
-import type { AuthEvent, AuthInteraction, AuthPrompt, AuthType, Provider } from '@earendil-works/pi-ai'
+import { select } from '@inquirer/prompts'
+import type { AuthEvent, AuthInteraction, AuthType, Provider } from '@earendil-works/pi-ai'
+import { promptFor } from './prompts.js'
 import { createOpenAuthRuntime } from './runtime.js'
 
 interface ParsedArgs {
@@ -59,23 +60,6 @@ function authTypes(provider: Provider): AuthType[] {
   if (provider.auth.oauth !== undefined) result.push('oauth')
   if (provider.auth.apiKey?.login !== undefined) result.push('api_key')
   return result
-}
-
-async function promptFor(value: AuthPrompt): Promise<string> {
-  const options = { message: value.message, ...(value.signal === undefined ? {} : { signal: value.signal }) }
-  switch (value.type) {
-    case 'secret': return password({ ...options, mask: '*' })
-    case 'select': return select({
-      ...options,
-      choices: value.options.map(option => ({
-        value: option.id,
-        name: option.label,
-        ...(option.description === undefined ? {} : { description: option.description }),
-      })),
-    })
-    case 'text':
-    case 'manual_code': return input({ ...options, ...(value.placeholder === undefined ? {} : { default: value.placeholder }) })
-  }
 }
 
 function interaction(openBrowser: boolean): AuthInteraction {
