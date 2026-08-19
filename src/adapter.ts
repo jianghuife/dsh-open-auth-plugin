@@ -134,7 +134,7 @@ export class OpenAuthAdapter extends LlmAdapter {
         ...(options.maxTokens === undefined ? {} : { maxTokens: options.maxTokens }),
         ...(options.sessionId === undefined ? {} : { sessionId: String(options.sessionId) }),
         ...(this.options.requestTimeoutMs === undefined ? {} : { timeoutMs: this.options.requestTimeoutMs }),
-        maxRetries: 0,
+        maxRetries: 3,
         signal: watchdog.signal,
         headers: attributionHeaders(),
       })
